@@ -1,0 +1,148 @@
+\documentclass[twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{authblk}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings} % Gói để trình bày code đẹp hơn
+\usepackage{hyperref}
+
+% Cấu hình hiển thị code
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    captionpos=b
+}
+
+\setlength{\columnsep}{24pt}
+\usepackage[switch]{lineno}
+\setlength\linenumbersep{8pt}
+
+%%%%%% Bibliography %%%%%%
+\usepackage[style=nejm, citestyle=numeric-comp, sorting=none]{biblatex}
+\addbibresource{sample.bib} 
+
+%%%%%% Title & Authors %%%%%%
+\title{\textbf{Full Implementation of BaSyx Asset Administration Shell Infrastructure: From Web UI to Real-Time Data Integration}}
+\author[1*]{Thai Dang Phuong Nam}
+\affil[1]{Reporter, System Integration Team}
+\affil[*]{Reporting Period: January 07, 2026 -- January 13, 2026}
+
+\setstretch{1.15}
+
+\begin{document}
+
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+    \begin{abstract}
+      This comprehensive study details the deployment and configuration of an industrial Digital Twin platform utilizing the Eclipse BaSyx framework. The research covers the end-to-end implementation including the React-based Web UI, a Dockerized AAS environment, and a persistent storage mechanism using MongoDB Atlas. We investigate the integration of a BaSyx DataBridge to facilitate real-time telemetry from IoT devices using MQTT and JSONata transformations. Results demonstrate a functional three-column visualization system and a robust ETL workflow capable of managing complex asset lifecycles in Industry 4.0 environments.
+    \end{abstract}
+    \vspace{1.5em}
+  \end{@twocolumnfalse}
+]
+
+\section{Introduction}
+The development of a Digital Twin (DT) requires a standardized method to represent physical assets in a digital format \cite{ref169}. This project implements the Asset Administration Shell (AAS) model following the IEC 63278 standard to ensure interoperability \cite{ref170, ref171}. The primary goal is to establish a secure, reliable information exchange layer using the BaSyx AAS Environment \cite{ref4, ref5}. 
+
+A critical challenge in standard AAS architectures is the volatile nature of in-memory storage, which risks losing historical states during system restarts \cite{ref76}. To address this, we integrate MongoDB as a persistent NoSQL layer \cite{ref78}. Furthermore, the system incorporates middleware for Extract-Transform-Load (ETL) operations to bridge the gap between Operational Technology (OT) and Information Technology (IT) \cite{ref107}.
+
+\section{Materials and Methods}
+
+\subsection{Web UI and Frontend Setup}
+The frontend utilizes the official Eclipse BaSyx web-ui repository \cite{ref12}. Deployment involves:
+\begin{itemize}
+    \item Cloning the repository and installing dependencies via \texttt{npm install} \cite{ref15}.
+    \item Executing \texttt{npm run dev} to initialize the interface at \texttt{http://localhost:3000}.
+    \item Configuring \texttt{basyx-infra.yml} to point to the backend service at port 8081.
+\end{itemize}
+
+\subsection{Backend and Database Integration}
+The backend leverages a Docker Compose environment \cite{ref21}. To enable persistence, the Java Server is configured with the \texttt{mongoDbStorage} profile \cite{ref84}.
+
+\begin{lstlisting}[language=bash, caption=Docker Compose environment configuration]
+services:
+  aas-env:
+    image: eclipsebasyx/aas-environment:2.0.0
+    ports: ["8081:8081"]
+    environment:
+      - SPRING_PROFILES_ACTIVE=mongoDbStorage
+      - SPRING_DATA_MONGODB_DATABASE=DT_DB
+      - Basyx_Cors_Allowed-Origins=*
+\end{lstlisting}
+
+\subsection{Real-Time Data Routing}
+The BaSyx DataBridge connects MQTT telemetry to the AAS server \cite{ref107}. We configured a \texttt{routes.json} file to map CPU and RAM usage metrics from a Python simulation script to specific Submodel elements. The workflow uses JSONata queries to extract values and HTTP PATCH requests for updates \cite{ref111}.
+
+\section{Results}
+
+\subsection{UI Features and Flow}
+The interface employs a three-column layout:
+\begin{itemize}
+    \item \textbf{Left:} AAS list with search and upload (\texttt{.aasx}).
+    \item \textbf{Middle:} Hierarchical Submodel tree visualization.
+    \item \textbf{Right:} Detailed visualizations and JSON raw data views.
+\end{itemize}
+
+\subsection{Persistent Storage Results}
+Data is automatically organized into MongoDB collections: \texttt{assetAdministrationShells}, \texttt{submodels}, and \texttt{conceptDescriptions} \cite{ref100}. This ensures data persistence across container restarts \cite{ref78}.
+
+\subsection{API Architecture Reference}
+The system maps functions according to the ISO 23247-2 model. Key schema attributes are summarized in Table \ref{tab:schema}.
+
+\begin{table}[h]
+    \caption{Key Schema Attributes and Technical Roles}    
+    \centering
+    \small
+    \begin{tabular}{lp{1.8cm}p{3cm}}
+            \toprule
+            Schema & Attribute & Purpose \\
+            \midrule
+            AAS & \texttt{submodels} & Links Shell to functional sets. \\
+            Submodel & \texttt{elements} & Stores states and specs. \\
+            Result & \texttt{messages} & Provides status feedback. \\
+            Reference & \texttt{keys} & Defines retrieval paths. \\
+            \bottomrule
+    \end{tabular}
+    \label{tab:schema}
+\end{table}
+
+\begin{table*}[t]
+    \caption{Comprehensive API Endpoint Reference for AAS Environment \cite{ref229}}    
+    \centering
+    \small
+    \begin{tabular}{llll}
+            \toprule
+            Functional Group & Method & Endpoint & Description \\
+            \midrule
+            AAS Repository & GET & \texttt{/shells} & Lists all shells. \\
+            AAS Repository & POST & \texttt{/shells} & Registers a new shell. \\
+            Submodel Repo & GET & \texttt{/submodels/\{id\}} & Returns submodel data. \\
+            Submodel Repo & PATCH & \texttt{/submodels/\{id\}/\$value} & Updates values only. \\
+            Operation & POST & \texttt{/.../invoke} & Triggers functions. \\
+            File/Attachment & PUT & \texttt{/.../attachment} & Uploads file content. \\
+            \bottomrule
+    \end{tabular}
+    \label{tab:endpoints}
+\end{table*}
+
+\section{Discussion}
+Implementation encountered 404 and CORS errors due to infrastructure misalignments \cite{ref59}. These were resolved by synchronizing the UI configuration and enabling global CORS origins.
+
+The use of Value-Only representation (\texttt{/\$value}) significantly reduced network overhead. While the current setup uses Docker for demonstration, production should transition to the full Java SDK for scalability \cite{ref191}.
+
+\section*{Acknowledgments}
+Special thanks to the system integration team for their support in configuring the AAS environment \cite{ref9}.
+
+\printbibliography
+
+\end{document}
