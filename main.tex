@@ -1,148 +1,191 @@
-\documentclass[twocolumn]{article}
+% bắt đầu phan khai báo, cấu hình gói và định dạng tài liệu
+  % Nó dùng để định nghĩa loại tài liệu và nạp các "gói" (packages) để mở rộng chức năng.
+  
+  % Dòng này khai báo đây là một bài báo và sẽ được hiển thị thành 2 cột
+  \documentclass[twocolumn]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[margin=1.25in]{geometry}
-\usepackage{authblk}
-\usepackage{setspace}
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{xcolor}
-\usepackage{listings} % Gói để trình bày code đẹp hơn
-\usepackage{hyperref}
+  % mỗi dòng tạo 1 gói có chức năng riêng
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
 
-% Cấu hình hiển thị code
-\lstset{
-    basicstyle=\ttfamily\small,
-    backgroundcolor=\color{gray!10},
-    frame=single,
-    breaklines=true,
-    captionpos=b
-}
+  % thiết lập lề của trang là 1.25 inch
+  \usepackage[margin=1.25in]{geometry}
+  \usepackage{authblk}
+  \usepackage{setspace}
 
-\setlength{\columnsep}{24pt}
-\usepackage[switch]{lineno}
-\setlength\linenumbersep{8pt}
+  % chèn hình ảnh vào tài liệu
+  \usepackage{graphicx}
+  \usepackage{subcaption}
 
-%%%%%% Bibliography %%%%%%
-\usepackage[style=nejm, citestyle=numeric-comp, sorting=none]{biblatex}
-\addbibresource{sample.bib} 
+  % hỗ trợ viết công thức toán học phức tạp
+  \usepackage{amsmath}
+  \usepackage{booktabs}
+  \usepackage{array}
+  \usepackage{xcolor}
 
-%%%%%% Title & Authors %%%%%%
-\title{\textbf{Full Implementation of BaSyx Asset Administration Shell Infrastructure: From Web UI to Real-Time Data Integration}}
-\author[1*]{Thai Dang Phuong Nam}
-\affil[1]{Reporter, System Integration Team}
-\affil[*]{Reporting Period: January 07, 2026 -- January 13, 2026}
+  % Gói để trình bày code đẹp hơn
+  \usepackage{listings} 
+  \usepackage{hyperref}
 
-\setstretch{1.15}
+  % Cấu hình hiển thị code
+  \lstset{
+      basicstyle=\ttfamily\small,
+      backgroundcolor=\color{gray!10},
+      frame=single,
+      breaklines=true,
+      captionpos=b
+  }
 
-\begin{document}
+  \setlength{\columnsep}{24pt}
+  \usepackage[switch]{lineno}
+  \setlength\linenumbersep{8pt}
 
-\twocolumn[
-  \begin{@twocolumnfalse}
-    \maketitle
-    \begin{abstract}
-      This comprehensive study details the deployment and configuration of an industrial Digital Twin platform utilizing the Eclipse BaSyx framework. The research covers the end-to-end implementation including the React-based Web UI, a Dockerized AAS environment, and a persistent storage mechanism using MongoDB Atlas. We investigate the integration of a BaSyx DataBridge to facilitate real-time telemetry from IoT devices using MQTT and JSONata transformations. Results demonstrate a functional three-column visualization system and a robust ETL workflow capable of managing complex asset lifecycles in Industry 4.0 environments.
-    \end{abstract}
-    \vspace{1.5em}
-  \end{@twocolumnfalse}
-]
+  %%%%%% Bibliography %%%%%%
+  % Sử dụng gói biblatex với kiểu trích dẫn NEJM và sắp xếp theo thứ tự xuất hiện, danh mục tài liệu tham khảo (bibliography) từ tệp sample.bib
+  \usepackage[style=nejm, citestyle=numeric-comp, sorting=none]{biblatex}
+  \addbibresource{sample.bib} 
 
-\section{Introduction}
-The development of a Digital Twin (DT) requires a standardized method to represent physical assets in a digital format \cite{ref169}. This project implements the Asset Administration Shell (AAS) model following the IEC 63278 standard to ensure interoperability \cite{ref170, ref171}. The primary goal is to establish a secure, reliable information exchange layer using the BaSyx AAS Environment \cite{ref4, ref5}. 
+  %%%%%% Title & Authors %%%%%%
+  % Định nghĩa tiêu đề của bài báo
+  \title{\textbf{Full Implementation of BaSyx Asset Administration Shell Infrastructure: From Web UI to Real-Time Data Integration}}
+  
+  % Định nghĩa tác giả và thông tin liên quan
+  \author[1*]{Nam - Phong - Son}
 
-A critical challenge in standard AAS architectures is the volatile nature of in-memory storage, which risks losing historical states during system restarts \cite{ref76}. To address this, we integrate MongoDB as a persistent NoSQL layer \cite{ref78}. Furthermore, the system incorporates middleware for Extract-Transform-Load (ETL) operations to bridge the gap between Operational Technology (OT) and Information Technology (IT) \cite{ref107}.
+  % Định nghĩa thông tin tác giả và thời gian báo cáo
+  \affil[1]{Reporter, System Integration Team}
+  \affil[*]{Reporting Period: January 07, 2026 -- January 13, 2026}
 
-\section{Materials and Methods}
+  \setstretch{1.15}
 
-\subsection{Web UI and Frontend Setup}
-The frontend utilizes the official Eclipse BaSyx web-ui repository \cite{ref12}. Deployment involves:
-\begin{itemize}
-    \item Cloning the repository and installing dependencies via \texttt{npm install} \cite{ref15}.
-    \item Executing \texttt{npm run dev} to initialize the interface at \texttt{http://localhost:3000}.
-    \item Configuring \texttt{basyx-infra.yml} to point to the backend service at port 8081.
-\end{itemize}
+% end phần khai báo, bắt đầu phần nội dung
 
-\subsection{Backend and Database Integration}
-The backend leverages a Docker Compose environment \cite{ref21}. To enable persistence, the Java Server is configured with the \texttt{mongoDbStorage} profile \cite{ref84}.
+% bắt đầu phần thông tin và nội dung chính của tài liệu
 
-\begin{lstlisting}[language=bash, caption=Docker Compose environment configuration]
-services:
-  aas-env:
-    image: eclipsebasyx/aas-environment:2.0.0
-    ports: ["8081:8081"]
-    environment:
-      - SPRING_PROFILES_ACTIVE=mongoDbStorage
-      - SPRING_DATA_MONGODB_DATABASE=DT_DB
-      - Basyx_Cors_Allowed-Origins=*
-\end{lstlisting}
+  \begin{document}
 
-\subsection{Real-Time Data Routing}
-The BaSyx DataBridge connects MQTT telemetry to the AAS server \cite{ref107}. We configured a \texttt{routes.json} file to map CPU and RAM usage metrics from a Python simulation script to specific Submodel elements. The workflow uses JSONata queries to extract values and HTTP PATCH requests for updates \cite{ref111}.
+  \twocolumn[
+    \begin{@twocolumnfalse}
+      \maketitle % tạo tiêu đề bài báo
 
-\section{Results}
+      % phần tóm tắt nội dung nghiên cứu
+      \begin{abstract}
+        This comprehensive study details the deployment and configuration of an industrial Digital Twin platform utilizing the Eclipse BaSyx framework. The research covers the end-to-end implementation including the React-based Web UI, a Dockerized AAS environment, and a persistent storage mechanism using MongoDB Atlas. We investigate the integration of a BaSyx DataBridge to facilitate real-time telemetry from IoT devices using MQTT and JSONata transformations. Results demonstrate a functional three-column visualization system and a robust ETL workflow capable of managing complex asset lifecycles in Industry 4.0 environments.
+      \end{abstract}
+      \vspace{1.5em}
+    \end{@twocolumnfalse}
+  ]
 
-\subsection{UI Features and Flow}
-The interface employs a three-column layout:
-\begin{itemize}
-    \item \textbf{Left:} AAS list with search and upload (\texttt{.aasx}).
-    \item \textbf{Middle:} Hierarchical Submodel tree visualization.
-    \item \textbf{Right:} Detailed visualizations and JSON raw data views.
-\end{itemize}
+  % Tạo phần giới thiệu Introduction
+  \section{Introduction}
+  The development of a Digital Twin (DT) requires a standardized method to represent physical assets in a digital format \cite{ref169}. This project implements the Asset Administration Shell (AAS) model following the IEC 63278 standard to ensure interoperability \cite{ref170, ref171}. The primary goal is to establish a secure, reliable information exchange layer using the BaSyx AAS Environment \cite{ref4, ref5}. 
 
-\subsection{Persistent Storage Results}
-Data is automatically organized into MongoDB collections: \texttt{assetAdministrationShells}, \texttt{submodels}, and \texttt{conceptDescriptions} \cite{ref100}. This ensures data persistence across container restarts \cite{ref78}.
+  A critical challenge in standard AAS architectures is the volatile nature of in-memory storage, which risks losing historical states during system restarts \cite{ref76}. To address this, we integrate MongoDB as a persistent NoSQL layer \cite{ref78}. Furthermore, the system incorporates middleware for Extract-Transform-Load (ETL) operations to bridge the gap between Operational Technology (OT) and Information Technology (IT) \cite{ref107}.
 
-\subsection{API Architecture Reference}
-The system maps functions according to the ISO 23247-2 model. Key schema attributes are summarized in Table \ref{tab:schema}.
+  \section{Materials and Methods}
 
-\begin{table}[h]
-    \caption{Key Schema Attributes and Technical Roles}    
-    \centering
-    \small
-    \begin{tabular}{lp{1.8cm}p{3cm}}
-            \toprule
-            Schema & Attribute & Purpose \\
-            \midrule
-            AAS & \texttt{submodels} & Links Shell to functional sets. \\
-            Submodel & \texttt{elements} & Stores states and specs. \\
-            Result & \texttt{messages} & Provides status feedback. \\
-            Reference & \texttt{keys} & Defines retrieval paths. \\
-            \bottomrule
-    \end{tabular}
-    \label{tab:schema}
-\end{table}
+  \subsection{Web UI and Frontend Setup}
+  The frontend utilizes the official Eclipse BaSyx web-ui repository \cite{ref12}. Deployment involves:
+  
+  % tạo danh sách gạch đầu dòng (bullet points) để liệt kê các bước triển khai
+  \begin{itemize}
+      \item Cloning the repository and installing dependencies via \texttt{npm install} \cite{ref15}.
+      \item Executing \texttt{npm run dev} to initialize the interface at \texttt{http://localhost:3000}.
+      \item Configuring \texttt{basyx-infra.yml} to point to the backend service at port 8081.
+  \end{itemize}
 
-\begin{table*}[t]
-    \caption{Comprehensive API Endpoint Reference for AAS Environment \cite{ref229}}    
-    \centering
-    \small
-    \begin{tabular}{llll}
-            \toprule
-            Functional Group & Method & Endpoint & Description \\
-            \midrule
-            AAS Repository & GET & \texttt{/shells} & Lists all shells. \\
-            AAS Repository & POST & \texttt{/shells} & Registers a new shell. \\
-            Submodel Repo & GET & \texttt{/submodels/\{id\}} & Returns submodel data. \\
-            Submodel Repo & PATCH & \texttt{/submodels/\{id\}/\$value} & Updates values only. \\
-            Operation & POST & \texttt{/.../invoke} & Triggers functions. \\
-            File/Attachment & PUT & \texttt{/.../attachment} & Uploads file content. \\
-            \bottomrule
-    \end{tabular}
-    \label{tab:endpoints}
-\end{table*}
+  \subsection{Backend and Database Integration}
+  The backend leverages a Docker Compose environment \cite{ref21}. To enable persistence, the Java Server is configured with the \texttt{mongoDbStorage} profile \cite{ref84}.
 
-\section{Discussion}
-Implementation encountered 404 and CORS errors due to infrastructure misalignments \cite{ref59}. These were resolved by synchronizing the UI configuration and enabling global CORS origins.
+  % tạo 1 khổi để hiển thị code bash với chú thích
+  \begin{lstlisting}[language=bash, caption=Docker Compose environment configuration]
+  services:
+    aas-env:
+      image: eclipsebasyx/aas-environment:2.0.0
+      ports: ["8081:8081"]
+      environment:
+        - SPRING_PROFILES_ACTIVE=mongoDbStorage
+        - SPRING_DATA_MONGODB_DATABASE=DT_DB
+        - Basyx_Cors_Allowed-Origins=*
+  \end{lstlisting}
 
-The use of Value-Only representation (\texttt{/\$value}) significantly reduced network overhead. While the current setup uses Docker for demonstration, production should transition to the full Java SDK for scalability \cite{ref191}.
+  % tạo một đoạn văn giải thích về cấu hình Docker Compose
+  \subsection{Real-Time Data Routing}
+  The BaSyx DataBridge connects MQTT telemetry to the AAS server \cite{ref107}. We configured a \texttt{routes.json} file to map CPU and RAM usage metrics from a Python simulation script to specific Submodel elements. The workflow uses JSONata queries to extract values and HTTP PATCH requests for updates \cite{ref111}.
 
-\section*{Acknowledgments}
-Special thanks to the system integration team for their support in configuring the AAS environment \cite{ref9}.
+  % tạo phần results để trình bày kết quả của quá trình triển khai
+  \section{Results}
 
-\printbibliography
+  % tạo phần con để trình bày các tính năng của giao diện người dùng và luồng hoạt động
+  \subsection{UI Features and Flow}
+  The interface employs a three-column layout:
 
-\end{document}
+  % tạo danh sách gạch đầu dòng để mô tả các phần của giao diện người dùng
+  \begin{itemize}
+      \item \textbf{Left:} AAS list with search and upload (\texttt{.aasx}).
+      \item \textbf{Middle:} Hierarchical Submodel tree visualization.
+      \item \textbf{Right:} Detailed visualizations and JSON raw data views.
+  \end{itemize}
+
+  % tạo phần con để trình bày về lưu trữ dữ liệu và kiến trúc API
+  \subsection{Persistent Storage Results}
+  Data is automatically organized into MongoDB collections: \texttt{assetAdministrationShells}, \texttt{submodels}, and \texttt{conceptDescriptions} \cite{ref100}. This ensures data persistence across container restarts \cite{ref78}.
+
+  % tạo phần con để trình bày về kiến trúc API và các điểm cuối (endpoints) quan trọng
+  \subsection{API Architecture Reference}
+  The system maps functions according to the ISO 23247-2 model. Key schema attributes are summarized in Table \ref{tab:schema}.
+
+  % tạo một bảng để trình bày các thuộc tính chính của schema và vai trò kỹ thuật của chúng
+  \begin{table}[h]
+      \caption{Key Schema Attributes and Technical Roles}    
+      \centering
+      \small
+      \begin{tabular}{lp{1.8cm}p{3cm}}
+              \toprule
+              Schema & Attribute & Purpose \\
+              \midrule
+              AAS & \texttt{submodels} & Links Shell to functional sets. \\
+              Submodel & \texttt{elements} & Stores states and specs. \\
+              Result & \texttt{messages} & Provides status feedback. \\
+              Reference & \texttt{keys} & Defines retrieval paths. \\
+              \bottomrule
+      \end{tabular}
+      \label{tab:schema}
+  \end{table}
+
+  % tạo một bảng khác để trình bày các endpoint API quan trọng và chức năng của chúng
+  \begin{table*}[t]
+      \caption{Comprehensive API Endpoint Reference for AAS Environment \cite{ref229}}    
+      \centering
+      \small
+      \begin{tabular}{llll}
+              \toprule
+              Functional Group & Method & Endpoint & Description \\
+              \midrule
+              AAS Repository & GET & \texttt{/shells} & Lists all shells. \\
+              AAS Repository & POST & \texttt{/shells} & Registers a new shell. \\
+              Submodel Repo & GET & \texttt{/submodels/\{id\}} & Returns submodel data. \\
+              Submodel Repo & PATCH & \texttt{/submodels/\{id\}/\$value} & Updates values only. \\
+              Operation & POST & \texttt{/.../invoke} & Triggers functions. \\
+              File/Attachment & PUT & \texttt{/.../attachment} & Uploads file content. \\
+              \bottomrule
+      \end{tabular}
+      \label{tab:endpoints}
+  \end{table*}
+
+  % tạo phần thảo luận để trình bày về những khó khăn gặp phải và cách giải quyết chúng, cũng như những điểm cần cải thiện trong tương lai
+  \section{Discussion}
+  Implementation encountered 404 and CORS errors due to infrastructure misalignments \cite{ref59}. These were resolved by synchronizing the UI configuration and enabling global CORS origins.
+
+  The use of Value-Only representation (\texttt{/\$value}) significantly reduced network overhead. While the current setup uses Docker for demonstration, production should transition to the full Java SDK for scalability \cite{ref191}.
+
+  % tạo phần kết luận để tóm tắt những điểm chính của nghiên cứu và hướng phát triển trong tương lai
+  \section*{Acknowledgments}
+  Special thanks to the system integration team for their support in configuring the AAS environment \cite{ref9}.
+
+  % tạo phần tài liệu tham khảo để liệt kê các nguồn đã được trích dẫn trong bài báo
+  \printbibliography
+
+  \end{document}
+
+% end phần thông tin và nội dung chính của tài liệu
