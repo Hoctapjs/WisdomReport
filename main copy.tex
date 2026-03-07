@@ -1,0 +1,101 @@
+\documentclass[twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{authblk}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% Cấu hình hiển thị code
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    captionpos=b
+}
+
+\setlength{\columnsep}{24pt}
+\usepackage[switch]{lineno}
+\setlength\linenumbersep{8pt}
+
+%%%%%% Bibliography %%%%%%
+\usepackage[style=nejm, citestyle=numeric-comp, sorting=none]{biblatex}
+\addbibresource{sample.bib} 
+
+%%%%%% Title & Authors %%%%%%
+\title{\textbf{Triển khai Nền tảng Hybrid-Digital Twin Dựa trên Eclipse BaSyx}}
+\author[1,2]{Thái Đặng Phương Nam}
+\author[2]{Nguyễn Lê Thanh Phong}
+\author[2]{Huỳnh Thanh Sơn}
+\affil[1]{Người báo cáo chính}
+\affil[2]{Wisdom Software}
+\affil[*]{TP. Hồ Chí Minh, Tháng 01 năm 2026}
+
+\renewcommand\Authands{, }
+\setstretch{1.15}
+
+\begin{document}
+
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+    \begin{abstract}
+      Báo cáo này trình bày chi tiết việc nghiên cứu và triển khai nền tảng Hybrid-Digital Twin (DT) dựa trên hệ sinh thái Eclipse BaSyx. Dự án tập trung vào việc thiết lập giao diện người dùng web, tìm hiểu cơ chế vận hành của Asset Administration Shell (AAS) và xây dựng hệ thống quản lý vòng đời tài sản số. Phạm vi bao gồm việc kết nối frontend với backend, tích hợp lưu trữ bền vững và thiết lập luồng dữ liệu thời gian thực từ thiết bị vật lý đến bản sao số, tuân thủ nghiêm ngặt các tiêu chuẩn IEC 63278 và ISO 23247-2.
+    \end{abstract}
+    \vspace{1.5em}
+  \end{@twocolumnfalse}
+]
+
+\section{Giới thiệu}
+Trong bối cảnh cuộc Cách mạng Công nghiệp 4.0 đang diễn ra mạnh mẽ, việc tối ưu hóa quy trình sản xuất thông qua số hóa đã trở thành một yêu cầu cấp thiết. Dự án "Hybrid-Digital Twin Platform" được hình thành như một nỗ lực nghiên cứu và triển khai thực tiễn hệ thống bản sao số, tận dụng sức mạnh của hệ sinh thái mã nguồn mở Eclipse BaSyx. Mục tiêu cốt lõi của dự án không chỉ dừng lại ở việc xây dựng một giao diện Web UI đơn thuần để hiển thị dữ liệu, mà còn tập trung vào việc nghiên cứu sâu cơ chế vận hành của Asset Administration Shell (AAS) – thành phần được coi là "hộ chiếu kỹ thuật số" cho các tài sản công nghiệp. Thông qua nền tảng này, nhóm thực hiện hướng tới việc thiết lập một hệ thống quản lý toàn diện, có khả năng theo dõi và điều phối vòng đời của tài sản từ giai đoạn cấu hình ban đầu đến quá trình vận hành thực tế tại nhà máy.
+
+Về mặt tiêu chuẩn hóa, hệ thống được xây dựng để trở thành một hình mẫu về tính liên thông quốc tế bằng cách tuân thủ nghiêm ngặt tiêu chuẩn IEC 63278, đảm bảo cấu trúc của AAS được thống nhất và có thể hiểu được bởi các hệ thống khác nhau trong hệ sinh thái công nghiệp. Bên cạnh đó, việc áp dụng mô hình tham chiếu ISO 23247-2 giúp dự án phân tách rõ ràng các dịch vụ quản lý tài nguyên số (Digital Twin Entity) và các thực thể giao tiếp thiết bị (Device Communication Entity). Sự kết hợp giữa các tiêu chuẩn này cung cấp một khung sườn vững chắc cho việc trao đổi thông tin an toàn, tin cậy và thúc đẩy khả năng tương tác giữa các hệ thống IT (Công nghệ thông tin) và OT (Công nghệ vận hành) vốn thường có sự cách biệt lớn.
+
+Phạm vi kỹ thuật của dự án tập trung vào ba trụ cột chính: kết nối đồng bộ Frontend-Backend, lưu trữ dữ liệu bền vững và tích hợp dữ liệu thời gian thực. Nhóm đã triển khai giải pháp kết nối giao diện người dùng dựa trên React với hệ thống Backend mạnh mẽ của BaSyx, cho phép quản lý các tập tin .aasx và cấu trúc Submodel một cách linh hoạt. Một điểm nhấn quan trọng là việc chuyển đổi từ lưu trữ tạm thời sang cơ chế lưu trữ bền vững với MongoDB Atlas, giúp loại bỏ hoàn toàn rủi ro mất mát dữ liệu khi hệ thống gặp sự cố hoặc tái khởi động. Cuối cùng, thông qua việc sử dụng BaSyx DataBridge, dự án thiết lập các luồng dữ liệu liên tục từ các cảm biến vật lý sử dụng giao thức MQTT đến bản sao số, cho phép cập nhật trạng thái thực tế của thiết bị lên môi trường ảo theo thời gian thực. Điều này đặt nền móng cho việc chuyển đổi từ các mô hình tĩnh sang các bản sao số có khả năng phản ứng (Reactive Digital Twin), giúp nâng cao hiệu quả giám sát và hỗ trợ ra quyết định trong sản xuất.
+\section{Nguyên liệu và Phương pháp}
+\subsection{Thành phần Hệ thống và Công nghệ}
+\begin{itemize}
+    \item \textbf{Frontend:} Sử dụng mã nguồn chính thức từ Eclipse BaSyx (React/Node.js). Được triển khai thông qua lệnh \texttt{npm install} và chạy trên cổng 3000.
+    \item \textbf{Backend:} Sử dụng Docker image \texttt{eclipsebasyx/aas-environment:2.0.0-milestone-08} để cung cấp các API RESTful.
+    \item \textbf{Cơ sở dữ liệu:} Tích hợp MongoDB Atlas để thay thế bộ nhớ tạm thời (in-memory), đảm bảo dữ liệu bền vững khi khởi động lại hệ thống.
+    \item \textbf{Middleware:} Sử dụng BaSyx DataBridge để làm cầu nối giữa giao thức OT (MQTT) và giao thức IT (HTTP/REST) theo mô hình ETL (Extract-Transform-Load).
+\end{itemize}
+
+\subsection{Quy trình Thực hiện}
+\begin{itemize}
+    \item \textbf{Cấu hình Hạ tầng:} Tệp \texttt{basyx-infra.yml} đã được điều chỉnh để trỏ UI đến dịch vụ backend một cách chính xác tại cổng 8081.
+    \item \textbf{Định tuyến Dữ liệu:} Một tệp \texttt{routes.json} đã được cấu hình để ánh xạ dữ liệu từ MQTT Broker (topic: \texttt{device/pc001/telemetry}) đến các thuộc tính tương ứng trong AAS thông qua phương thức HTTP PATCH.
+\end{itemize}
+
+\section{Kết quả}
+\begin{itemize}
+    \item \textbf{Giao diện Người dùng:} Đã triển khai thành công một Web UI với bố cục ba cột trực quan: Danh sách AAS (Trái), Cây thư mục Submodel (Giữa), và Chi tiết/Hiển thị Dữ liệu (Phải).
+    \item \textbf{Khả năng Quản lý:} Hệ thống hỗ trợ tải lên các tệp \texttt{.aasx}, duyệt cấu trúc phân cấp và hiển thị dữ liệu JSON thô cho các nhà phát triển.
+    \item \textbf{Tích hợp Dữ liệu:} Đã thiết lập thành công một kịch bản giám sát PC, với các thông số CPU Usage và RAM Usage được cập nhật theo thời gian thực.
+    \item \textbf{Hệ thống API:} Cung cấp một bộ API toàn diện, cho phép thực hiện các thao tác CRUD trên Shells, Submodels, Concept Descriptions và kích hoạt các hoạt động của thiết bị thông qua giao diện \texttt{invoke}.
+\end{itemize}
+
+\section{Thảo luận}
+\begin{itemize}
+    \item \textbf{Giải quyết Vấn đề Kỹ thuật:} Trong quá trình triển khai, nhóm đã giải quyết các lỗi CORS bằng cách cấu hình \texttt{Basyx\_Cors\_Allowed-Origins=*} và sửa các lỗi 404 do cấu hình không khớp giữa các dịch vụ Registry/Repository.
+    \item \textbf{Ưu điểm của MongoDB:} Việc chuyển sang cơ sở dữ liệu NoSQL đã cải thiện việc quản lý cấu trúc dữ liệu phân cấp của AAS và cho phép mở rộng linh hoạt khi số lượng thiết bị tăng lên.
+    \item \textbf{Khả năng tương tác:} Cơ chế tuần tự hóa (serialization) cho phép toàn bộ mô hình Digital Twin được đóng gói thành một tệp duy nhất, hỗ trợ di chuyển dữ liệu giữa các máy chủ AAS khác nhau trong môi trường sản xuất phân tán.
+    \item \textbf{Đề xuất:} Đối với môi trường sản xuất, cần nghiên cứu sâu hơn về Java SDK đầy đủ và mã hóa thông tin kết nối MongoDB.
+\end{itemize}
+
+\section*{Lời cảm ơn}
+Báo cáo này được thực hiện bởi đội ngũ kỹ thuật tại Wisdom Software. Nhóm dự án bao gồm: Thái Đặng Phương Nam (Người báo cáo chính), Nguyễn Lê Thanh Phong, và Huỳnh Thanh Sơn. Nghiên cứu được hoàn thành vào tháng 01 năm 2026 tại TP. Hồ Chí Minh.
+
+\printbibliography
+
+\end{document}
